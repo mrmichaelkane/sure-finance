@@ -22,6 +22,10 @@ en:
         chart:
           title: Monthly cash flow
           description: Grouped income and expense bars with net cash flow overlay.
+          legend:
+            income: Income
+            expenses: Expenses
+            net_cash_flow: Net cash flow
         table:
           month: Month
           income: Income

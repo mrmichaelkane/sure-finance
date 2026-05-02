@@ -6,7 +6,12 @@
       expense: month.expense.to_f,
       net: month.net_cash_flow.to_f
     }
-  end
+  end,
+  legend: {
+    income: t(".chart.legend.income"),
+    expenses: t(".chart.legend.expenses"),
+    net_cash_flow: t(".chart.legend.net_cash_flow")
+  }
 } %>
 
 <div class="space-y-6">
@@ -64,7 +69,7 @@
     <div
       class="mt-6 min-h-80 w-full"
       data-controller="income-expenses-chart"
-      data-income-expenses-chart-data-value="<%= chart_data.to_json %>"></div>
+      data-income-expenses-chart-data-value="<%= ERB::Util.json_escape(chart_data.to_json) %>"></div>
   </div>
 
   <div class="rounded-xl border border-primary bg-container overflow-hidden">

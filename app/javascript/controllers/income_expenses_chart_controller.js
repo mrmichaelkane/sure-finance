@@ -144,11 +144,14 @@ export default class extends Controller {
       .append("g")
       .attr("transform", `translate(${margin.left}, ${height - 12})`);
 
-    [
-      { label: "Income", color: "#16a34a" },
-      { label: "Expenses", color: "#ef4444" },
-      { label: "Net cash flow", color: "#0f172a", line: true },
-    ].forEach((item, index) => {
+    const legendPayload = this.dataValue.legend || {};
+    const legendItems = [
+      { label: legendPayload.income || "Income", color: "#16a34a" },
+      { label: legendPayload.expenses || "Expenses", color: "#ef4444" },
+      { label: legendPayload.net_cash_flow || "Net cash flow", color: "#0f172a", line: true }
+    ];
+
+    legendItems.forEach((item, index) => {
       const entry = legend.append("g").attr("transform", `translate(${index * 132}, 0)`);
 
       if (item.line) {
