@@ -122,6 +122,7 @@ class AdvancedReports::TransactionSummaryQueryTest < ActiveSupport::TestCase
     other_family = families(:empty)
     other_account = other_family.accounts.create!(
       name: "Other Checking",
+      balance: 0,
       currency: "USD",
       accountable: Depository.create!,
       owner: users(:empty)

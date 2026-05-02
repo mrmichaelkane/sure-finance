@@ -4,4 +4,22 @@
   <div class="rounded-xl border border-primary bg-container p-6">
     <p class="text-secondary text-sm"><%= t(".description") %></p>
   </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <%= link_to advanced_reports_income_expenses_path,
+                class: "rounded-xl border border-primary bg-container p-6 transition-colors hover:bg-surface-hover" do %>
+      <div class="flex items-start justify-between gap-4">
+        <div class="space-y-2">
+          <h2 class="text-lg font-medium text-primary">
+            <%= t(".income_expenses.title") %>
+          </h2>
+          <p class="text-sm text-secondary">
+            <%= t(".income_expenses.description") %>
+          </p>
+        </div>
+
+        <%= icon("arrow-right", size: "sm") %>
+      </div>
+    <% end %>
+  </div>
 </div>

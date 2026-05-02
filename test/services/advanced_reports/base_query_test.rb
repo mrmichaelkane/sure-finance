@@ -16,6 +16,7 @@ class AdvancedReports::BaseQueryTest < ActiveSupport::TestCase
     other_family = families(:empty)
     other_account = other_family.accounts.create!(
       name: "Other Checking",
+      balance: 0,
       currency: "USD",
       accountable: Depository.create!,
       owner: users(:empty)
@@ -80,5 +81,46 @@ class AdvancedReports::BaseQueryTest < ActiveSupport::TestCase
     transaction_ids = query.send(:scoped_transactions).pluck(:id)
 
     assert_not_includes transaction_ids, pending_entry.entryable_id
+  end
+
+  test "excludes entries marked as excluded" do
+    excluded_entry = @account.entries.create!(
+      name: "Excluded expense",
+      date: TEST_DATE,
+      amount: 30,
+      currency: "USD",
+      excluded: true,
+      entryable: Transaction.new(kind: "standard")
+    )
+
+    query = AdvancedReports::BaseQuery.new(@family, date_range_filter: @filter)
+    transaction_ids = query.send(:scoped_transactions).pluck(:id)
+
+    assert_not_includes transaction_ids, excluded_entry.entryable_id
+  end
+
+  test "filters transactions to the selected account ids" do
+    other_account = accounts(:connected)
+    other_entry = other_account.entries.create!(
+      name: "Other account expense",
+      date: TEST_DATE,
+      amount: 25,
+      currency: "USD",
+      entryable: Transaction.new(kind: "standard")
+    )
+
+    selected_entry = @account.entries.create!(
+      name: "Selected account expense",
+      date: TEST_DATE,
+      amount: 40,
+      currency: "USD",
+      entryable: Transaction.new(kind: "standard")
+    )
+
+    query = AdvancedReports::BaseQuery.new(@family, date_range_filter: @filter, account_ids: @account.id)
+    transaction_ids = query.send(:scoped_transactions).pluck(:id)
+
+    assert_includes transaction_ids, selected_entry.entryable_id
+    assert_not_includes transaction_ids, other_entry.entryable_id
   end
 end

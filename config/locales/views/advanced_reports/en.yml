@@ -7,7 +7,43 @@ en:
         description: In-depth financial analysis and reporting.
         breadcrumb_home: Home
         breadcrumb_reports: Reports
+        income_expenses:
+          title: Income vs Expenses
+          description: Track income, expenses, and net cash flow month by month.
+    income_expenses:
+      report:
+        all_accounts: All accounts
+        showing_period: "Showing %{start_date} to %{end_date}"
+        summary:
+          total_income: Total Income
+          total_expenses: Total Expenses
+          net_cash_flow: Net Cash Flow
+          savings_rate: Savings Rate
+        chart:
+          title: Monthly cash flow
+          description: Grouped income and expense bars with net cash flow overlay.
+        table:
+          month: Month
+          income: Income
+          expenses: Expenses
+          net_cash_flow: Net Cash Flow
+      index:
+        title: Income vs Expenses
+        invalid_date_range: The selected date range is invalid. Showing the last 3 months instead.
+        filters:
+          date_range: Date range
+          account: Account
+          all_accounts: All accounts
+          start_date: Start date
+          end_date: End date
+        presets:
+          this_month: This month
+          last_3_months: Last 3 months
+          ytd: Year to date
+          last_year: Last year
+          custom: Custom
     shared:
       sub_nav:
         title: Advanced Reports
         dashboard: Dashboard
+        income_expenses: Income vs Expenses
