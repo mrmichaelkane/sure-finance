@@ -11,5 +11,9 @@
     <%= link_to t("advanced_reports.shared.sub_nav.income_expenses"),
                 advanced_reports_income_expenses_path,
                 class: "text-sm px-3 py-1.5 rounded-lg transition-colors #{ page_active?(advanced_reports_income_expenses_path) ? "bg-container text-primary font-medium" : "text-secondary hover:text-primary hover:bg-container" }" %>
+
+    <%= link_to t("advanced_reports.shared.sub_nav.monthly_trends"),
+                advanced_reports_monthly_trends_path,
+                class: "text-sm px-3 py-1.5 rounded-lg transition-colors #{ page_active?(advanced_reports_monthly_trends_path) ? "bg-container text-primary font-medium" : "text-secondary hover:text-primary hover:bg-container" }" %>
   </div>
 </nav>

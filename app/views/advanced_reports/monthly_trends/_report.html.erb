@@ -1,0 +1,135 @@
+<% rolling_metric = report.focus_metric == :income ? :rolling_income : :rolling_expense %>
+<% month_over_month_positive_is_good = report.focus_metric == :income %>
+<% month_over_month_tone =
+  if report.month_over_month.change_amount.zero?
+    "text-primary"
+  elsif month_over_month_positive_is_good
+    report.month_over_month.change_amount.positive? ? "text-success" : "text-destructive"
+  else
+    report.month_over_month.change_amount.positive? ? "text-destructive" : "text-success"
+  end %>
+
+<% chart_series = [] %>
+<% chart_series << {
+  key: "expenses",
+  label: t(".chart.legend.expenses"),
+  color: "#ef4444",
+  dashed: false,
+  values: report.months.map { |month| { date: month.date_formatted, label: month.label, value: month.expense.to_f } }
+} if %w[expenses both].include?(report.mode) %>
+<% chart_series << {
+  key: "income",
+  label: t(".chart.legend.income"),
+  color: "#16a34a",
+  dashed: false,
+  values: report.months.map { |month| { date: month.date_formatted, label: month.label, value: month.income.to_f } }
+} if %w[income both].include?(report.mode) %>
+<% chart_series << {
+  key: "rolling_average",
+  label: t(".chart.legend.rolling_average"),
+  color: "#94a3b8",
+  dashed: true,
+  values: report.months.map { |month| { date: month.date_formatted, label: month.label, value: month.public_send(rolling_metric).to_f } }
+} %>
+
+<% chart_data = { series: chart_series } %>
+<% focus_values = report.months.map(&report.focus_metric) %>
+<% sparkline_points_data = sparkline_points(focus_values, width: 80, height: 24) %>
+
+<div class="space-y-6">
+  <% if flash[:alert].present? %>
+    <div class="rounded-xl border border-destructive bg-destructive-surface px-4 py-3 text-sm text-destructive">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="flex flex-col gap-1">
+    <p class="text-sm text-secondary">
+      <%= t(".showing_period",
+            start_date: l(@date_range_filter.start_date, format: :long),
+            end_date: l(@date_range_filter.end_date, format: :long)) %>
+    </p>
+    <p class="text-sm text-secondary">
+      <%= @selected_account.present? ? @selected_account.name : t(".all_accounts") %>
+      <% if report.category_name.present? %>
+        · <%= report.category_name %>
+      <% end %>
+    </p>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= t(".summary.month_over_month") %></p>
+      <p class="mt-2 text-2xl font-medium <%= month_over_month_tone %>">
+        <%= number_to_currency(report.month_over_month.change_amount, unit: Money::Currency.new(report.currency).symbol) %>
+      </p>
+      <p class="mt-1 text-sm text-secondary">
+        <% if report.month_over_month.change_percent.nil? %>
+          <%= t(".summary.no_previous_month") %>
+        <% else %>
+          <%= number_to_percentage(report.month_over_month.change_percent, precision: 2, strip_insignificant_zeros: true) %>
+        <% end %>
+      </p>
+      <% if sparkline_points_data.present? %>
+        <svg viewBox="0 0 80 24" class="mt-3 h-6 w-20">
+          <polyline points="<%= sparkline_points_data %>" fill="none" stroke="currentColor" stroke-width="1.5" class="<%= month_over_month_tone %>" />
+        </svg>
+      <% end %>
+    </div>
+
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= t(".summary.best_month") %></p>
+      <p class="mt-2 text-2xl font-medium text-success"><%= number_to_currency(report.best_month.value, unit: Money::Currency.new(report.currency).symbol) %></p>
+      <p class="mt-1 text-sm text-secondary"><%= report.best_month.month.label %></p>
+    </div>
+
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= t(".summary.worst_month") %></p>
+      <p class="mt-2 text-2xl font-medium text-destructive"><%= number_to_currency(report.worst_month.value, unit: Money::Currency.new(report.currency).symbol) %></p>
+      <p class="mt-1 text-sm text-secondary"><%= report.worst_month.month.label %></p>
+    </div>
+
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= report.focus_metric == :income ? t(".summary.average_monthly_income") : t(".summary.average_monthly_spend") %></p>
+      <p class="mt-2 text-2xl font-medium text-primary"><%= number_to_currency(report.average_value, unit: Money::Currency.new(report.currency).symbol) %></p>
+      <p class="mt-1 text-sm text-secondary"><%= t(".summary.period_average") %></p>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-primary bg-container p-4 md:p-6">
+    <div>
+      <h2 class="text-lg font-medium text-primary"><%= t(".chart.title") %></h2>
+      <p class="text-sm text-secondary"><%= t(".chart.description") %></p>
+    </div>
+
+    <div
+      class="mt-6 min-h-80 w-full"
+      data-controller="monthly-trends-chart"
+      data-monthly-trends-chart-data-value="<%= ERB::Util.json_escape(chart_data.to_json) %>"></div>
+  </div>
+
+  <div class="rounded-xl border border-primary bg-container overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-primary">
+        <thead class="bg-surface">
+          <tr class="text-left text-sm text-secondary">
+            <th class="px-4 py-3 font-medium"><%= t(".table.month") %></th>
+            <th class="px-4 py-3 font-medium"><%= t(".table.income") %></th>
+            <th class="px-4 py-3 font-medium"><%= t(".table.expenses") %></th>
+            <th class="px-4 py-3 font-medium"><%= t(".table.rolling_average") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-primary text-sm text-primary">
+          <% report.months.each do |month| %>
+            <tr>
+              <td class="px-4 py-3 font-medium"><%= month.label %></td>
+              <td class="px-4 py-3"><%= number_to_currency(month.income, unit: Money::Currency.new(report.currency).symbol) %></td>
+              <td class="px-4 py-3"><%= number_to_currency(month.expense, unit: Money::Currency.new(report.currency).symbol) %></td>
+              <td class="px-4 py-3"><%= number_to_currency(month.public_send(rolling_metric), unit: Money::Currency.new(report.currency).symbol) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
