@@ -22,5 +22,21 @@
         <%= icon("arrow-right", size: "sm") %>
       </div>
     <% end %>
+
+    <%= link_to advanced_reports_monthly_trends_path,
+                class: "rounded-xl border border-primary bg-container p-6 transition-colors hover:bg-surface-hover" do %>
+      <div class="flex items-start justify-between gap-4">
+        <div class="space-y-2">
+          <h2 class="text-lg font-medium text-primary">
+            <%= t(".monthly_trends.title") %>
+          </h2>
+          <p class="text-sm text-secondary">
+            <%= t(".monthly_trends.description") %>
+          </p>
+        </div>
+
+        <%= icon("arrow-right", size: "sm") %>
+      </div>
+    <% end %>
   </div>
 </div>

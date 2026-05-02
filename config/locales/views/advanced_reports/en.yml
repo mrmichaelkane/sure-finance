@@ -10,6 +10,9 @@ en:
         income_expenses:
           title: Income vs Expenses
           description: Track income, expenses, and net cash flow month by month.
+        monthly_trends:
+          title: Monthly Trends
+          description: Explore longer-term income and spending patterns with a rolling average.
     income_expenses:
       report:
         all_accounts: All accounts
@@ -45,8 +48,54 @@ en:
           ytd: Year to date
           last_year: Last year
           custom: Custom
+    monthly_trends:
+      index:
+        title: Monthly Trends
+        invalid_date_range: The selected date range is invalid. Showing the last 12 months instead.
+        filters:
+          date_range: Date range
+          show: Show
+          account: Account
+          category: Category
+          all_accounts: All accounts
+          all_categories: All categories
+          start_date: Start date
+          end_date: End date
+        presets:
+          last_12_months: Last 12 months
+          last_24_months: Last 24 months
+          ytd: Year to date
+          custom: Custom
+        modes:
+          expenses: Expenses
+          income: Income
+          both: Income and expenses
+      report:
+        all_accounts: All accounts
+        showing_period: "Showing %{start_date} to %{end_date}"
+        summary:
+          month_over_month: Month-over-month change
+          no_previous_month: No prior month available
+          best_month: Best month
+          worst_month: Worst month
+          average_monthly_spend: Average monthly spend
+          average_monthly_income: Average monthly income
+          period_average: Period average
+        chart:
+          title: Monthly trend
+          description: Monthly totals with a 3-month rolling average.
+          legend:
+            income: Income
+            expenses: Expenses
+            rolling_average: 3-month average
+        table:
+          month: Month
+          income: Income
+          expenses: Expenses
+          rolling_average: 3-month average
     shared:
       sub_nav:
         title: Advanced Reports
         dashboard: Dashboard
         income_expenses: Income vs Expenses
+        monthly_trends: Monthly Trends

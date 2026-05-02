@@ -561,6 +561,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :dashboard, only: :index
     resources :income_expenses, only: :index
+    resources :monthly_trends, only: :index
   end
 
   # Admin namespace for super admin functionality
