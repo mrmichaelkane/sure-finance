@@ -1,0 +1,11 @@
+<nav class="shrink-0 border-b border-primary bg-surface px-3 md:px-10">
+  <div class="max-w-6xl mx-auto flex items-center gap-1 py-2">
+    <span class="text-sm font-medium text-secondary mr-3">
+      <%= t("advanced_reports.shared.sub_nav.title") %>
+    </span>
+
+    <%= link_to t("advanced_reports.shared.sub_nav.dashboard"),
+                advanced_reports_dashboard_index_path,
+                class: "text-sm px-3 py-1.5 rounded-lg transition-colors #{ page_active?(advanced_reports_dashboard_index_path) ? "bg-container text-primary font-medium" : "text-secondary hover:text-primary hover:bg-container" }" %>
+  </div>
+</nav>
