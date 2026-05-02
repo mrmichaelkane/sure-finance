@@ -562,6 +562,7 @@ Rails.application.routes.draw do
     resources :dashboard, only: :index
     resources :income_expenses, only: :index
     resources :monthly_trends, only: :index
+    resources :tag_analysis, only: :index
   end
 
   # Admin namespace for super admin functionality
