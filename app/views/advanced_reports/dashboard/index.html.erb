@@ -38,5 +38,21 @@
         <%= icon("arrow-right", size: "sm") %>
       </div>
     <% end %>
+
+    <%= link_to advanced_reports_tag_analysis_index_path,
+                class: "rounded-xl border border-primary bg-container p-6 transition-colors hover:bg-surface-hover" do %>
+      <div class="flex items-start justify-between gap-4">
+        <div class="space-y-2">
+          <h2 class="text-lg font-medium text-primary">
+            <%= t(".tag_analysis.title") %>
+          </h2>
+          <p class="text-sm text-secondary">
+            <%= t(".tag_analysis.description") %>
+          </p>
+        </div>
+
+        <%= icon("arrow-right", size: "sm") %>
+      </div>
+    <% end %>
   </div>
 </div>

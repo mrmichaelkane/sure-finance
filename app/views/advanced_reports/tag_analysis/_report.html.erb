@@ -1,0 +1,101 @@
+<% chart_data = {
+  rows: report.rows.first(10).map do |row|
+    {
+      label: row.tag_name,
+      value: row.total_spend.to_f
+    }
+  end
+} %>
+
+<div class="space-y-6">
+  <% if flash[:alert].present? %>
+    <div class="rounded-xl border border-destructive bg-destructive-surface px-4 py-3 text-sm text-destructive">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <% if @tags.empty? %>
+    <div class="rounded-xl border border-primary bg-container p-8 text-center">
+      <h2 class="text-lg font-medium text-primary"><%= t(".empty.no_tags_title") %></h2>
+      <p class="mt-2 text-sm text-secondary"><%= t(".empty.no_tags_description") %></p>
+    </div>
+  <% elsif report.rows.empty? %>
+    <div class="rounded-xl border border-primary bg-container p-8 text-center">
+      <h2 class="text-lg font-medium text-primary"><%= t(".empty.no_results_title") %></h2>
+      <p class="mt-2 text-sm text-secondary"><%= t(".empty.no_results_description") %></p>
+    </div>
+  <% else %>
+    <div class="flex flex-col gap-1">
+      <p class="text-sm text-secondary">
+        <%= t(".showing_period",
+              start_date: l(@date_range_filter.start_date, format: :long),
+              end_date: l(@date_range_filter.end_date, format: :long)) %>
+      </p>
+      <p class="text-sm text-secondary">
+        <%= @selected_account.present? ? @selected_account.name : t(".all_accounts") %>
+      </p>
+    </div>
+
+    <% if report.comparison_rows.size == 2 %>
+      <div class="grid gap-4 md:grid-cols-2">
+        <% report.comparison_rows.each do |row| %>
+          <div class="rounded-xl border border-primary bg-container p-4">
+            <p class="text-sm text-secondary"><%= row.tag_name %></p>
+            <p class="mt-2 text-2xl font-medium text-primary"><%= number_to_currency(row.total_spend, unit: Money::Currency.new(report.currency).symbol) %></p>
+            <p class="mt-1 text-sm text-secondary">
+              <%= t(".comparison.transaction_count", count: row.transaction_count) %>
+            </p>
+            <p class="mt-1 text-sm text-secondary">
+              <%= l(row.start_date, format: :long) %> - <%= l(row.end_date, format: :long) %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="rounded-xl border border-primary bg-container p-4 md:p-6">
+      <div>
+        <h2 class="text-lg font-medium text-primary"><%= t(".chart.title") %></h2>
+        <p class="text-sm text-secondary"><%= t(".chart.description") %></p>
+      </div>
+
+      <div
+        class="mt-6 min-h-80 w-full"
+        data-controller="tag-analysis-chart"
+        data-tag-analysis-chart-data-value="<%= ERB::Util.json_escape(chart_data.to_json) %>"></div>
+    </div>
+
+    <div class="rounded-xl border border-primary bg-container overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-primary">
+          <thead class="bg-surface">
+            <tr class="text-left text-sm text-secondary">
+              <th class="px-4 py-3 font-medium"><%= t(".table.tag") %></th>
+              <th class="px-4 py-3 font-medium"><%= t(".table.total_spend") %></th>
+              <th class="px-4 py-3 font-medium"><%= t(".table.transaction_count") %></th>
+              <th class="px-4 py-3 font-medium"><%= t(".table.date_range") %></th>
+              <th class="px-4 py-3 font-medium"><%= t(".table.actions") %></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-primary text-sm text-primary">
+            <% report.rows.each do |row| %>
+              <tr>
+                <td class="px-4 py-3 font-medium"><%= row.tag_name %></td>
+                <td class="px-4 py-3"><%= number_to_currency(row.total_spend, unit: Money::Currency.new(report.currency).symbol) %></td>
+                <td class="px-4 py-3"><%= row.transaction_count %></td>
+                <td class="px-4 py-3">
+                  <%= l(row.start_date, format: :long) %> - <%= l(row.end_date, format: :long) %>
+                </td>
+                <td class="px-4 py-3">
+                  <%= link_to t(".table.view_transactions"),
+                              transactions_path(q: transaction_filter_params(row.tag_name)),
+                              class: "text-primary underline underline-offset-2" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</div>

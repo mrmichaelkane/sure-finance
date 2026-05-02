@@ -13,6 +13,9 @@ en:
         monthly_trends:
           title: Monthly Trends
           description: Explore longer-term income and spending patterns with a rolling average.
+        tag_analysis:
+          title: Tag Analysis
+          description: See project and custom-group spending across categories by tag.
     income_expenses:
       report:
         all_accounts: All accounts
@@ -93,9 +96,51 @@ en:
           income: Income
           expenses: Expenses
           rolling_average: 3-month average
+    tag_analysis:
+      index:
+        title: Tag Analysis
+        invalid_date_range: The selected date range is invalid. Showing the last 3 months instead.
+        filters:
+          date_range: Date range
+          account: Account
+          all_accounts: All accounts
+          compare_tag_a: Compare tag A
+          compare_tag_b: Compare tag B
+          none: None
+          start_date: Start date
+          end_date: End date
+        presets:
+          this_month: This month
+          last_3_months: Last 3 months
+          ytd: Year to date
+          last_year: Last year
+          custom: Custom
+      report:
+        all_accounts: All accounts
+        showing_period: "Showing %{start_date} to %{end_date}"
+        comparison:
+          transaction_count:
+            one: "1 transaction"
+            other: "%{count} transactions"
+        chart:
+          title: Spend by tag
+          description: Ranked spending by tag for the selected period.
+        table:
+          tag: Tag
+          total_spend: Total spend
+          transaction_count: Transactions
+          date_range: Date range
+          actions: Actions
+          view_transactions: View transactions
+        empty:
+          no_tags_title: No tags yet
+          no_tags_description: Create tags first to start analyzing cross-category spending.
+          no_results_title: No tagged spending in this period
+          no_results_description: Try a different date range or account selection.
     shared:
       sub_nav:
         title: Advanced Reports
         dashboard: Dashboard
         income_expenses: Income vs Expenses
         monthly_trends: Monthly Trends
+        tag_analysis: Tag Analysis
