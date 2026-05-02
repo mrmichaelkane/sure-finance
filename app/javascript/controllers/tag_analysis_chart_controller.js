@@ -27,7 +27,8 @@ export default class extends Controller {
     const rows = this.dataValue.rows || [];
     if (!rows.length) return;
 
-    const margin = { top: 12, right: 24, bottom: 12, left: 160 };
+    const labelWidthEstimate = this.#estimateLabelWidth(rows);
+    const margin = { top: 12, right: labelWidthEstimate + 24, bottom: 12, left: 160 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
@@ -92,12 +93,24 @@ export default class extends Controller {
       .data(rows)
       .enter()
       .append("text")
-      .attr("x", (row) => x(row.value) + 8)
+      .attr("x", (row) => {
+        const barEnd = x(row.value);
+        const wouldOverflow = barEnd + 8 + labelWidthEstimate > innerWidth;
+
+        return wouldOverflow ? Math.max(barEnd - 8, 8) : barEnd + 8;
+      })
       .attr("y", (row) => y(row.label) + y.bandwidth() / 2)
       .attr("dominant-baseline", "middle")
-      .attr("fill", "#94a3b8")
+      .attr("text-anchor", (row) => (x(row.value) + 8 + labelWidthEstimate > innerWidth ? "end" : "start"))
+      .attr("fill", (row) => (x(row.value) + 8 + labelWidthEstimate > innerWidth ? "#e2e8f0" : "#94a3b8"))
       .attr("font-size", 12)
       .text((row) => this.#formatAxisValue(row.value));
+  }
+
+  #estimateLabelWidth(rows) {
+    const longestLabelLength = d3.max(rows, (row) => this.#formatAxisValue(row.value).length) || 0;
+
+    return longestLabelLength * 8;
   }
 
   #formatAxisValue(value) {
