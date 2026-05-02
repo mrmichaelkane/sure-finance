@@ -1,0 +1,13 @@
+---
+en:
+  advanced_reports:
+    dashboard:
+      index:
+        title: Advanced Reports
+        description: In-depth financial analysis and reporting.
+        breadcrumb_home: Home
+        breadcrumb_reports: Reports
+    shared:
+      sub_nav:
+        title: Advanced Reports
+        dashboard: Dashboard

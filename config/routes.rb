@@ -556,6 +556,11 @@ Rails.application.routes.draw do
   get "terms", to: terms_url ? redirect(terms_url) : "pages#terms"
   get "intro", to: "pages#intro"
 
+  # Advanced Reports namespace
+  namespace :advanced_reports do
+    resources :dashboard, only: :index
+  end
+
   # Admin namespace for super admin functionality
   namespace :admin do
     resources :sso_providers do
