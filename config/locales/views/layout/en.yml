@@ -6,6 +6,7 @@ en:
       nav:
         assistant: Assistant
         budgets: Budgets
+        advanced_reports: Advanced Reports
         home: Home
         reports: Reports
         transactions: Transactions
