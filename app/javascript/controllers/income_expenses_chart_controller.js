@@ -54,20 +54,13 @@ export default class extends Controller {
       .range([0, x0.bandwidth()])
       .padding(0.18);
 
-    const maxValue = d3.max(data, (d) => Math.max(d.income, d.expense, d.net, 0)) || 0;
-    const minValue = d3.min(data, (d) => Math.min(d.net, 0)) || 0;
+    const maxValue = d3.max(data, (d) => Math.max(d.income, d.expense, 0)) || 0;
 
     const y = d3
       .scaleLinear()
-      .domain([minValue, maxValue])
+      .domain([0, maxValue])
       .nice()
       .range([innerHeight, 0]);
-
-    const line = d3
-      .line()
-      .x((d) => x0(d.label) + x0.bandwidth() / 2)
-      .y((d) => y(d.net))
-      .curve(d3.curveMonotoneX);
 
     chart
       .append("g")
@@ -104,29 +97,11 @@ export default class extends Controller {
       .enter()
       .append("rect")
       .attr("x", (d) => x1(d.key))
-      .attr("y", (d) => y(Math.max(d.value, 0)))
+      .attr("y", (d) => y(d.value))
       .attr("width", x1.bandwidth())
-      .attr("height", (d) => Math.abs(y(d.value) - y(0)))
+      .attr("height", (d) => y(0) - y(d.value))
       .attr("rx", 6)
       .attr("fill", (d) => d.color);
-
-    chart
-      .append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "#0f172a")
-      .attr("stroke-width", 2.5)
-      .attr("d", line);
-
-    chart
-      .selectAll("circle.net-point")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", (d) => x0(d.label) + x0.bandwidth() / 2)
-      .attr("cy", (d) => y(d.net))
-      .attr("r", 3.5)
-      .attr("fill", "#0f172a");
 
     chart
       .append("g")
@@ -147,29 +122,18 @@ export default class extends Controller {
     const legendPayload = this.dataValue.legend || {};
     const legendItems = [
       { label: legendPayload.income || "Income", color: "#16a34a" },
-      { label: legendPayload.expenses || "Expenses", color: "#ef4444" },
-      { label: legendPayload.net_cash_flow || "Net cash flow", color: "#0f172a", line: true }
+      { label: legendPayload.expenses || "Expenses", color: "#ef4444" }
     ];
 
     legendItems.forEach((item, index) => {
       const entry = legend.append("g").attr("transform", `translate(${index * 132}, 0)`);
 
-      if (item.line) {
-        entry.append("line")
-          .attr("x1", 0)
-          .attr("x2", 18)
-          .attr("y1", -4)
-          .attr("y2", -4)
-          .attr("stroke", item.color)
-          .attr("stroke-width", 2.5);
-      } else {
-        entry.append("rect")
-          .attr("width", 18)
-          .attr("height", 10)
-          .attr("rx", 3)
-          .attr("y", -9)
-          .attr("fill", item.color);
-      }
+      entry.append("rect")
+        .attr("width", 18)
+        .attr("height", 10)
+        .attr("rx", 3)
+        .attr("y", -9)
+        .attr("fill", item.color);
 
       entry.append("text")
         .attr("x", 24)
