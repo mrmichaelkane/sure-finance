@@ -558,6 +558,7 @@ Rails.application.routes.draw do
 
   # Advanced Reports namespace
   namespace :advanced_reports do
+    root to: "dashboard#index"
     resources :dashboard, only: :index
   end
 
