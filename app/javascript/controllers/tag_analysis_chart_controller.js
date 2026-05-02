@@ -27,10 +27,13 @@ export default class extends Controller {
     const rows = this.dataValue.rows || [];
     if (!rows.length) return;
 
-    const labelWidthEstimate = this.#estimateLabelWidth(rows);
-    const margin = { top: 12, right: labelWidthEstimate + 24, bottom: 12, left: 160 };
+    const valueLabelWidth = this.#estimateValueLabelWidth(rows);
+    const leftMargin = Math.min(Math.max(this.#estimateTagLabelWidth(rows) + 24, 88), 180);
+    const margin = { top: 12, right: valueLabelWidth + 32, bottom: 40, left: leftMargin };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+
+    if (innerWidth <= 0 || innerHeight <= 0) return;
 
     const svg = d3
       .select(this.element)
@@ -95,22 +98,28 @@ export default class extends Controller {
       .append("text")
       .attr("x", (row) => {
         const barEnd = x(row.value);
-        const wouldOverflow = barEnd + 8 + labelWidthEstimate > innerWidth;
+        const wouldOverflow = barEnd + 12 + valueLabelWidth > innerWidth;
 
-        return wouldOverflow ? Math.max(barEnd - 8, 8) : barEnd + 8;
+        return wouldOverflow ? Math.max(barEnd - 10, 10) : barEnd + 12;
       })
       .attr("y", (row) => y(row.label) + y.bandwidth() / 2)
       .attr("dominant-baseline", "middle")
-      .attr("text-anchor", (row) => (x(row.value) + 8 + labelWidthEstimate > innerWidth ? "end" : "start"))
-      .attr("fill", (row) => (x(row.value) + 8 + labelWidthEstimate > innerWidth ? "#e2e8f0" : "#94a3b8"))
+      .attr("text-anchor", (row) => (x(row.value) + 12 + valueLabelWidth > innerWidth ? "end" : "start"))
+      .attr("fill", (row) => (x(row.value) + 12 + valueLabelWidth > innerWidth ? "#e2e8f0" : "#94a3b8"))
       .attr("font-size", 12)
-      .text((row) => this.#formatAxisValue(row.value));
+      .text((row) => this.#formatCurrency(row.value));
   }
 
-  #estimateLabelWidth(rows) {
-    const longestLabelLength = d3.max(rows, (row) => this.#formatAxisValue(row.value).length) || 0;
+  #estimateTagLabelWidth(rows) {
+    const longestLabelLength = d3.max(rows, (row) => row.label.length) || 0;
 
     return longestLabelLength * 8;
+  }
+
+  #estimateValueLabelWidth(rows) {
+    const longestLabelLength = d3.max(rows, (row) => this.#formatCurrency(row.value).length) || 0;
+
+    return Math.max(longestLabelLength * 8, 52);
   }
 
   #formatAxisValue(value) {
@@ -120,6 +129,14 @@ export default class extends Controller {
       return `$${(value / 1000).toFixed(1)}k`;
     }
 
-    return `$${value}`;
+    return this.#formatCurrency(value);
+  }
+
+  #formatCurrency(value) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: value % 1 === 0 ? 0 : 2,
+    }).format(value);
   }
 }
