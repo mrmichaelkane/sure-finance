@@ -1,0 +1,48 @@
+<% content_for :page_title, t(".title") %>
+
+<div class="space-y-6">
+  <div class="rounded-xl border border-primary bg-container p-4 md:p-6">
+    <%= form_with url: advanced_reports_income_expenses_path,
+                  method: :get,
+                  data: { controller: "auto-submit-form", turbo_frame: "income_expenses_report" },
+                  class: "grid gap-4 lg:grid-cols-4" do |form| %>
+      <div class="space-y-1">
+        <%= form.label :preset, t(".filters.date_range"), class: "text-sm font-medium text-secondary" %>
+        <%= form.select :preset,
+                        options_for_select(@date_range_filter.class::PRESETS.map { |preset| [t(".presets.#{preset}"), preset] } + [[t(".presets.custom"), "custom"]], @preset),
+                        {},
+                        data: { auto_submit_form_target: "auto" },
+                        class: "w-full rounded-lg border border-primary bg-surface px-3 py-2 text-sm text-primary" %>
+      </div>
+
+      <div class="space-y-1">
+        <%= form.label :account_id, t(".filters.account"), class: "text-sm font-medium text-secondary" %>
+        <%= form.select :account_id,
+                        options_for_select([[t(".filters.all_accounts"), nil]] + @accounts.map { |account| [account.name, account.id] }, @selected_account_id),
+                        {},
+                        data: { auto_submit_form_target: "auto" },
+                        class: "w-full rounded-lg border border-primary bg-surface px-3 py-2 text-sm text-primary" %>
+      </div>
+
+      <div class="space-y-1">
+        <%= form.label :start_date, t(".filters.start_date"), class: "text-sm font-medium text-secondary" %>
+        <%= form.date_field :start_date,
+                            value: @date_range_filter.start_date&.strftime("%Y-%m-%d"),
+                            data: { auto_submit_form_target: "auto" },
+                            class: "w-full rounded-lg border border-primary bg-surface px-3 py-2 text-sm text-primary" %>
+      </div>
+
+      <div class="space-y-1">
+        <%= form.label :end_date, t(".filters.end_date"), class: "text-sm font-medium text-secondary" %>
+        <%= form.date_field :end_date,
+                            value: @date_range_filter.end_date&.strftime("%Y-%m-%d"),
+                            data: { auto_submit_form_target: "auto" },
+                            class: "w-full rounded-lg border border-primary bg-surface px-3 py-2 text-sm text-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= turbo_frame_tag "income_expenses_report" do %>
+    <%= render "report", report: @report %>
+  <% end %>
+</div>

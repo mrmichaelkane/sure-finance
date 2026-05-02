@@ -560,6 +560,7 @@ Rails.application.routes.draw do
   namespace :advanced_reports do
     root to: "dashboard#index"
     resources :dashboard, only: :index
+    resources :income_expenses, only: :index
   end
 
   # Admin namespace for super admin functionality

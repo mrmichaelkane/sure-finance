@@ -1,0 +1,101 @@
+<% chart_data = {
+  values: report.months.map do |month|
+    {
+      label: month.label,
+      income: month.income.to_f,
+      expense: month.expense.to_f,
+      net: month.net_cash_flow.to_f
+    }
+  end,
+  legend: {
+    income: t(".chart.legend.income"),
+    expenses: t(".chart.legend.expenses"),
+    net_cash_flow: t(".chart.legend.net_cash_flow")
+  }
+} %>
+
+<div class="space-y-6">
+  <% if flash[:alert].present? %>
+    <div class="rounded-xl border border-destructive bg-destructive-surface px-4 py-3 text-sm text-destructive">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="flex flex-col gap-1">
+    <p class="text-sm text-secondary">
+      <%= t(".showing_period",
+            start_date: l(@date_range_filter.start_date, format: :long),
+            end_date: l(@date_range_filter.end_date, format: :long)) %>
+    </p>
+    <p class="text-sm text-secondary">
+      <%= @selected_account.present? ? @selected_account.name : t(".all_accounts") %>
+    </p>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= t(".summary.total_income") %></p>
+      <p class="mt-2 text-2xl font-medium text-primary"><%= number_to_currency(report.total_income, unit: Money::Currency.new(report.currency).symbol) %></p>
+    </div>
+
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= t(".summary.total_expenses") %></p>
+      <p class="mt-2 text-2xl font-medium text-primary"><%= number_to_currency(report.total_expense, unit: Money::Currency.new(report.currency).symbol) %></p>
+    </div>
+
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= t(".summary.net_cash_flow") %></p>
+      <p class="mt-2 text-2xl font-medium <%= report.net_cash_flow.negative? ? "text-destructive" : "text-success" %>">
+        <%= number_to_currency(report.net_cash_flow, unit: Money::Currency.new(report.currency).symbol) %>
+      </p>
+    </div>
+
+    <div class="rounded-xl border border-primary bg-container p-4">
+      <p class="text-sm text-secondary"><%= t(".summary.savings_rate") %></p>
+      <p class="mt-2 text-2xl font-medium <%= report.savings_rate.negative? ? "text-destructive" : "text-primary" %>">
+        <%= number_to_percentage(report.savings_rate, precision: 2, strip_insignificant_zeros: true) %>
+      </p>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-primary bg-container p-4 md:p-6">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <h2 class="text-lg font-medium text-primary"><%= t(".chart.title") %></h2>
+        <p class="text-sm text-secondary"><%= t(".chart.description") %></p>
+      </div>
+    </div>
+
+    <div
+      class="mt-6 min-h-80 w-full"
+      data-controller="income-expenses-chart"
+      data-income-expenses-chart-data-value="<%= ERB::Util.json_escape(chart_data.to_json) %>"></div>
+  </div>
+
+  <div class="rounded-xl border border-primary bg-container overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-primary">
+        <thead class="bg-surface">
+          <tr class="text-left text-sm text-secondary">
+            <th class="px-4 py-3 font-medium"><%= t(".table.month") %></th>
+            <th class="px-4 py-3 font-medium"><%= t(".table.income") %></th>
+            <th class="px-4 py-3 font-medium"><%= t(".table.expenses") %></th>
+            <th class="px-4 py-3 font-medium"><%= t(".table.net_cash_flow") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-primary text-sm text-primary">
+          <% report.months.each do |month| %>
+            <tr>
+              <td class="px-4 py-3 font-medium"><%= month.label %></td>
+              <td class="px-4 py-3"><%= number_to_currency(month.income, unit: Money::Currency.new(report.currency).symbol) %></td>
+              <td class="px-4 py-3"><%= number_to_currency(month.expense, unit: Money::Currency.new(report.currency).symbol) %></td>
+              <td class="px-4 py-3 <%= month.net_cash_flow.negative? ? "text-destructive" : "text-success" %>">
+                <%= number_to_currency(month.net_cash_flow, unit: Money::Currency.new(report.currency).symbol) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
