@@ -21,11 +21,10 @@ en:
           savings_rate: Savings Rate
         chart:
           title: Monthly cash flow
-          description: Grouped income and expense bars with net cash flow overlay.
+          description: Grouped income and expense bars by month.
           legend:
             income: Income
             expenses: Expenses
-            net_cash_flow: Net cash flow
         table:
           month: Month
           income: Income

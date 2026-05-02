@@ -2,7 +2,7 @@
 
 module AdvancedReports
   class BaseController < ApplicationController
-    layout "advanced_reports"
+    layout "application"
 
     before_action :set_account_scope
 

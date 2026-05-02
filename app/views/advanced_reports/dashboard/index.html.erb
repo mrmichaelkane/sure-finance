@@ -1,8 +1,9 @@
-<% content_for :page_title, t(".title") %>
-
 <div class="space-y-6">
+  <%= render "advanced_reports/shared/sub_nav" %>
+
   <div class="rounded-xl border border-primary bg-container p-6">
-    <p class="text-secondary text-sm"><%= t(".description") %></p>
+    <h1 class="text-xl font-medium text-primary"><%= t(".title") %></h1>
+    <p class="mt-2 text-secondary text-sm"><%= t(".description") %></p>
   </div>
 
   <div class="grid gap-4 md:grid-cols-2">
